@@ -19,7 +19,9 @@ options(htmltools.dir.version = FALSE)
 ---
 class: inverse
 
-# Essa apresentação
+# Hoje
+
+https://abjur.github.com/webinar/2018-06-04-tpu
 
 ## Jurimetria
 
@@ -282,9 +284,19 @@ cifra_oculta <- prob_tab * 5091 # qtd na tabela original
 
 # Como melhorar?
 
+--
+
 1. Montar um modelo preditivo com base nas petições iniciais.
+
+--
+
 2. Aplicar modelo preditivo para classificação automática com base na TPU.
+
+--
+
 3. Ainda não fizemos isso!!! STJ está fazendo.
+
+--
 
 ## Mas e se a TPU for ruim?
 
