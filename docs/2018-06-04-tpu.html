@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tabelas Processuais Unificadas</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Julio Trecenti" />
+    <meta name="date" content="2018-06-04" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Tabelas Processuais Unificadas
+## Webinar
+### Julio Trecenti
+### 2018-06-04
+
+---
+
+
+
+
+---
+class: inverse
+
+# Essa apresentação
+
+## Jurimetria
+
+--
+
+## Tabelas Processuais Unificadas (TPUs)
+
+--
+
+- Conceito
+
+--
+
+- Utilidade
+    - TPUs para definir escopo
+    - TPUs como variáveis explicativas
+
+--
+
+- Problemas
+    - Tipos insuficientes
+    - Cifra oculta
+
+--
+
+- Soluções
+    - Tipos: topic models
+    - Cifra: redes Bayesianas
+
+---
+class: inverse
+
+# O que é jurimetria
+
+### Estatística aplicada ao direito
+
+--
+
+### Utilizamos dados do judiciário para estudar o que acontece no direito e como poderíamos melhorá-lo
+
+---
+class: inverse
+
+# Para quê serve jurimetria?
+
+--
+
+### auxiliar na formulação de políticas públicas,
+
+--
+
+### melhorar a administração dos tribunais,
+
+--
+
+### calcular o risco de carteiras de processos e
+
+--
+
+### otimizar estratégias processuais.
+
+---
+
+# Nas empresas
+
+![](jurimetria_empresas.png)&lt;!-- --&gt;
+
+---
+class: inverse, middle, center
+
+# Principal problema da jurimetria
+
+--
+
+### Dados horríveis e volumosos
+
+--
+
+### Pré-sal sociológico
+
+---
+class: inverse, middle
+
+# Como resolver isso?
+
+--
+
+Ajude a ABJ nos nossos projetos open source 😄
+
+--
+
+Vamos democratizar os dados do judiciário!
+
+---
+class: inverse, middle, center
+
+Tabelas Processuais Unificadas
+==============================
+
+---
+
+# Conceito
+
+--
+
+- Res. 46 do CNJ: Tabelas Processuais Unificadas: determinam as classes,  assuntos e movimentações dos processos em todas as esferas, em todos os tribunais brasileiros.
+
+--
+
+- Classe: rito processual
+
+- Assunto: causas de pedir
+
+- Movimentação: eventos
+
+--
+
+Nosso interesse aqui será no **assunto**.
+
+- Cada assunto está associado a uma ou mais normas do direito
+- Os assuntos podem mudar com o tempo
+
+---
+
+# Exemplo
+
+![](tpu.png)&lt;!-- --&gt;
+
+---
+
+# Questões de interesse
+
+--
+
+### Analisar todos os processos relacionados ao direito do consumidor
+
+--
+
+### Taxa de decisões favoráveis por assunto
+
+---
+
+# Redes bayesianas
+
+https://abjur.github.io/tjspBook/
+
+![](rb-1-1.jpg)&lt;!-- --&gt;
+
+---
+
+# Redes bayesianas
+
+https://abjur.github.io/tjspBook/
+
+![](rb.png)&lt;!-- --&gt;
+
+---
+
+## Exemplo
+
+
+
+
+```r
+probs &lt;- bnlearn::cpdist(
+  fitted = modelo, 
+  nodes = "assunto_nome5", 
+  evidence = (assunto_nome4 == "Aquisição4") &amp; 
+                (assunto_nome3 == "Propriedade3")
+)
+n &lt;- probs$assunto_nome5[probs$assunto_nome5 != "-5"]
+prob_tab &lt;- prop.table(table(as.character(n)))
+cifra_oculta &lt;- prob_tab * 5091 # qtd na tabela original
+```
+
+|assunto_nome5                        |    Freq|
+|:------------------------------------|-------:|
+|Usucapião da L 6.969/19815           |   87.47|
+|Usucapião Especial (Constitucional)5 |  787.27|
+|Usucapião Especial Coletiva5         |   17.49|
+|Usucapião Extraordinária5            | 2764.19|
+|Usucapião Ordinária5                 | 1434.58|
+
+---
+
+# Como melhorar?
+
+1. Montar um modelo preditivo com base nas petições iniciais.
+2. Aplicar modelo preditivo para classificação automática com base na TPU.
+3. Ainda não fizemos isso!!! STJ está fazendo.
+
+## Mas e se a TPU for ruim?
+
+---
+
+# Topic models + classificação
+
+- Modelo de agrupamento (não supervisionado)
+- Similar ao `\(k\)`-médias, mas para textos
+
+## Exemplo: [saúde](https://github.com/abjur/saudeTJSP)
+
+
+
+|Topic 1   |Topic 2 |Topic 3 |Topic 4         |Topic 5  |
+|:---------|:-------|:-------|:---------------|:--------|
+|medic     |neg     |medic   |medic           |reajust  |
+|fornec    |medic   |moral   |fornec          |pag      |
+|necess    |moral   |hospit  |obrig           |manutenc |
+|constitu  |obrig   |inden   |subst           |cole     |
+|obrig     |cirurg  |atend   |prelimin        |mens     |
+|reexam    |recus   |cirurg  |fosfoetanolamin |benefici |
+|mand      |inden   |err     |sinte           |mant     |
+|constituc |consum  |peric   |necess          |segur    |
+|art_196   |indic   |aus     |doenc           |empreg   |
+|mant      |segur   |intern  |experiment      |obrig    |
+
+---
+
+# Classificação
+
+1. Topic models já é um modelo preditivo
+    - mas a variável resposta é latente
+1. Juntar com inputs de especialistas
+
+--
+
+1. Criar amostra na mão. [Iniciativa craftr!!!](https://github.com/abjur/craftr)
+
+--
+
+1. Ajustar modelo preditivo
+
+- Bag of words + florestas aleatórias.
+- Outro modelo mais sofisticado (embedding + rnn, por exemplo)
+
+---
+class: inverse, middle, center
+
+# Objetivo final: The [lexverse](https://github.com/lexverse) !!!
+
+---
+class: inverse
+
+# Me stalkeia
+
+### https://github.com/jtrecenti
+
+### https://github.com/abjur
+
+### https://github.com/courtsbr
+
+### https://github.com/decryptr
+
+### https://github.com/curso-r
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  }
+});
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,359 @@
+---
+title: "Tabelas Processuais Unificadas"
+subtitle: "Webinar"
+author: "Julio Trecenti"
+date: "2018-06-04"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+---
+class: inverse
+
+# Essa apresentação
+
+## Jurimetria
+
+--
+
+## Tabelas Processuais Unificadas (TPUs)
+
+--
+
+- Conceito
+
+--
+
+- Utilidade
+    - TPUs para definir escopo
+    - TPUs como variáveis explicativas
+
+--
+
+- Problemas
+    - Tipos insuficientes
+    - Cifra oculta
+
+--
+
+- Soluções
+    - Tipos: topic models
+    - Cifra: redes Bayesianas
+
+---
+class: inverse
+
+# O que é jurimetria
+
+### Estatística aplicada ao direito
+
+--
+
+### Utilizamos dados do judiciário para estudar o que acontece no direito e como poderíamos melhorá-lo
+
+---
+class: inverse
+
+# Para quê serve jurimetria?
+
+--
+
+### auxiliar na formulação de políticas públicas,
+
+--
+
+### melhorar a administração dos tribunais,
+
+--
+
+### calcular o risco de carteiras de processos e
+
+--
+
+### otimizar estratégias processuais.
+
+---
+
+# Nas empresas
+
+```{r, echo=FALSE}
+knitr::include_graphics("jurimetria_empresas.png")
+```
+
+---
+class: inverse, middle, center
+
+# Principal problema da jurimetria
+
+--
+
+### Dados horríveis e volumosos
+
+--
+
+### Pré-sal sociológico
+
+---
+class: inverse, middle
+
+# Como resolver isso?
+
+--
+
+Ajude a ABJ nos nossos projetos open source `r emo::ji("smile")`
+
+--
+
+Vamos democratizar os dados do judiciário!
+
+---
+class: inverse, middle, center
+
+Tabelas Processuais Unificadas
+==============================
+
+---
+
+# Conceito
+
+--
+
+- Res. 46 do CNJ: Tabelas Processuais Unificadas: determinam as classes,  assuntos e movimentações dos processos em todas as esferas, em todos os tribunais brasileiros.
+
+--
+
+- Classe: rito processual
+
+- Assunto: causas de pedir
+
+- Movimentação: eventos
+
+--
+
+Nosso interesse aqui será no **assunto**.
+
+- Cada assunto está associado a uma ou mais normas do direito
+- Os assuntos podem mudar com o tempo
+
+---
+
+# Exemplo
+
+```{r echo=FALSE}
+knitr::include_graphics("tpu.png")
+```
+
+---
+
+# Questões de interesse
+
+--
+
+### Analisar todos os processos relacionados ao direito do consumidor
+
+--
+
+### Taxa de decisões favoráveis por assunto
+
+---
+
+# Redes bayesianas
+
+https://abjur.github.io/tjspBook/
+
+```{r echo=FALSE}
+knitr::include_graphics("rb-1-1.jpg")
+```
+
+---
+
+# Redes bayesianas
+
+https://abjur.github.io/tjspBook/
+
+```{r echo=FALSE}
+knitr::include_graphics("rb.png")
+```
+
+---
+
+## Exemplo
+
+```{r echo=FALSE, eval=FALSE}
+library(magrittr)
+d <- readxl::read_excel("assuntos_tjsp_2014-2016.xls") %>% 
+  purrr::set_names(abjutils::rm_accent) %>% 
+  purrr::set_names(stringr::str_replace_all, "º", "") %>% 
+  janitor::clean_names() %>% 
+  dplyr::filter(assunto_nome1 == "DIREITO CIVIL") %>% 
+  dplyr::select(-assunto_casos_novos_instancia) %>% 
+  dplyr::mutate_at(dplyr::vars(x1_grau:turma_recursal),
+                   dplyr::funs(readr::parse_double(stringr::str_trim(.), 
+                                                   na = "-"))) %>% 
+  dplyr::mutate_if(is.double, floor) %>% 
+  dplyr::select(-assunto_nome6, -assunto_nome7)
+
+res <- d %>% 
+  dplyr::group_by(assunto_nome1) %>% 
+  dplyr::mutate(n = n()) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::mutate(tipo1 = dplyr::case_when(
+    n==1~"folha",assunto_nome2=="-"~"cifra",TRUE~"pai")
+  ) %>% 
+  dplyr::group_by(assunto_nome1, assunto_nome2) %>% 
+  dplyr::mutate(n = n()) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::mutate(tipo2 = dplyr::case_when(
+    n==1 ~ "folha",assunto_nome3=="-"~"cifra",TRUE~"pai"
+  )) %>% 
+  dplyr::group_by(assunto_nome1, assunto_nome2, assunto_nome3) %>% 
+  dplyr::mutate(n = n()) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::mutate(tipo3 = dplyr::case_when(
+    n==1~"folha",assunto_nome4=="-"~"cifra",TRUE~"pai"
+  )) %>% 
+  dplyr::group_by(assunto_nome1, assunto_nome2,
+                  assunto_nome3, assunto_nome4) %>% 
+  dplyr::mutate(n = n()) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::mutate(tipo4 = dplyr::case_when(
+    n==1~"folha",assunto_nome5=="-"~"cifra",TRUE~"pai"
+  )) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::select(-n)
+
+da <- res %>% 
+  dplyr::filter(tipo1 != "cifra", tipo2 != "cifra", 
+                tipo3 != "cifra", tipo4 != "cifra") %>% 
+  dplyr::mutate(assunto_nome1 = paste0(assunto_nome1, 1),
+                assunto_nome2 = paste0(assunto_nome2, 2),
+                assunto_nome3 = paste0(assunto_nome3, 3),
+                assunto_nome4 = paste0(assunto_nome4, 4),
+                assunto_nome5 = paste0(assunto_nome5, 5)) %>% 
+  dplyr::select(assunto_nome2:assunto_nome5, x1_grau) %>% 
+  dplyr::filter(!is.na(x1_grau)) %>% 
+  dplyr::mutate(x1_grau = as.integer(x1_grau)) %>% 
+  tidyr::uncount(x1_grau) %>% 
+  dplyr::mutate_if(is.character, as.factor) %>% 
+  as.data.frame()
+
+nodes <- paste0("assunto_nome", 2:5)
+g <- bnlearn::empty.graph(nodes)
+m <- nodes %>% 
+  purrr::set_names(.) %>% 
+  tibble::enframe() %>% 
+  dplyr::mutate(value = dplyr::lead(value)) %>% 
+  dplyr::filter(!is.na(value)) %>% 
+  as.matrix()
+bnlearn::arcs(g) <- m
+modelo <- bnlearn::bn.fit(g, da)
+```
+
+```{r eval=FALSE}
+probs <- bnlearn::cpdist(
+  fitted = modelo, 
+  nodes = "assunto_nome5", 
+  evidence = (assunto_nome4 == "Aquisição4") & 
+                (assunto_nome3 == "Propriedade3")
+)
+n <- probs$assunto_nome5[probs$assunto_nome5 != "-5"]
+prob_tab <- prop.table(table(as.character(n)))
+cifra_oculta <- prob_tab * 5091 # qtd na tabela original
+```
+
+|assunto_nome5                        |    Freq|
+|:------------------------------------|-------:|
+|Usucapião da L 6.969/19815           |   87.47|
+|Usucapião Especial (Constitucional)5 |  787.27|
+|Usucapião Especial Coletiva5         |   17.49|
+|Usucapião Extraordinária5            | 2764.19|
+|Usucapião Ordinária5                 | 1434.58|
+
+---
+
+# Como melhorar?
+
+1. Montar um modelo preditivo com base nas petições iniciais.
+2. Aplicar modelo preditivo para classificação automática com base na TPU.
+3. Ainda não fizemos isso!!! STJ está fazendo.
+
+## Mas e se a TPU for ruim?
+
+---
+
+# Topic models + classificação
+
+- Modelo de agrupamento (não supervisionado)
+- Similar ao $k$-médias, mas para textos
+
+## Exemplo: [saúde](https://github.com/abjur/saudeTJSP)
+
+```{r echo=FALSE, eval=FALSE}
+library(magrittr)
+lda <- readr::read_rds("~/Documents/saudeTJSP/lda.rds")
+topicmodels::get_terms(lda[[1]], 10) %>% 
+  tibble::as_tibble() %>% 
+  knitr::kable()
+```
+
+|Topic 1   |Topic 2 |Topic 3 |Topic 4         |Topic 5  |
+|:---------|:-------|:-------|:---------------|:--------|
+|medic     |neg     |medic   |medic           |reajust  |
+|fornec    |medic   |moral   |fornec          |pag      |
+|necess    |moral   |hospit  |obrig           |manutenc |
+|constitu  |obrig   |inden   |subst           |cole     |
+|obrig     |cirurg  |atend   |prelimin        |mens     |
+|reexam    |recus   |cirurg  |fosfoetanolamin |benefici |
+|mand      |inden   |err     |sinte           |mant     |
+|constituc |consum  |peric   |necess          |segur    |
+|art_196   |indic   |aus     |doenc           |empreg   |
+|mant      |segur   |intern  |experiment      |obrig    |
+
+---
+
+# Classificação
+
+1. Topic models já é um modelo preditivo
+    - mas a variável resposta é latente
+1. Juntar com inputs de especialistas
+
+--
+
+1. Criar amostra na mão. [Iniciativa craftr!!!](https://github.com/abjur/craftr)
+
+--
+
+1. Ajustar modelo preditivo
+
+- Bag of words + florestas aleatórias.
+- Outro modelo mais sofisticado (embedding + rnn, por exemplo)
+
+---
+class: inverse, middle, center
+
+# Objetivo final: The [lexverse](https://github.com/lexverse) !!!
+
+---
+class: inverse
+
+# Me stalkeia
+
+### https://github.com/jtrecenti
+
+### https://github.com/abjur
+
+### https://github.com/courtsbr
+
+### https://github.com/decryptr
+
+### https://github.com/curso-r
+
