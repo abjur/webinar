@@ -14,6 +14,7 @@ output:
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(echo=FALSE)
 ```
 
 ---
@@ -83,7 +84,7 @@ class: inverse
 
 - Estadual, Eleitoral: 27 tribunais (um por estado)
 - Federal: 5 regiões (conjuntos de estados)
-- Trabalho: 24 tribunais (geralmente conjuntos de estados, menos TRT2 e TRT15)
+- Trabalho: 24 tribunais (geralmente cj. de estados, menos TRT2 e TRT15)
 - Militar: 3 tribunais (complicated)
 - Superiores: TST, STJ, STF, STM (Brasil)
 
