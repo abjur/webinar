@@ -1,0 +1,230 @@
+---
+title: "Tribunais 101"
+subtitle: "Webinar"
+author: "Julio Trecenti"
+date: "2018-07-02"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+---
+class: inverse
+
+# Hoje
+
+https://abjur.github.com/webinar/2018-07-02-tribunais101
+
+## Estrutura tribunais 101
+
+--
+
+- Definições
+  - Cortes territoriais e de matéria
+  - Esferas e especializações
+  - Comarcas, Entrâncias, Circunscrições, Regiões Administrativsas
+
+--
+
+- Bases disponíveis
+    - Módulo de produtividade mensal
+    - Waze do judiciário
+
+--
+
+- Problemas
+    - Integração MPM / DJE
+    - Shapefile de comarcas
+    - Listas de foros desorganizada
+
+---
+class: inverse
+
+# Definições
+
+Quando queremos fazer uma pesquisa jurimétrica, temos fazer recortes no universo de processos. Esses cortes envolvem
+
+--
+
+### Cortes temporais
+
+--
+
+### Cortes regionais
+
+--
+
+### Cortes de matéria
+
+---
+class: inverse
+
+# Corte de matéria
+
+- **Esferas**: Estadual, Federal, Trabalho, Militar, Eleitoral, Superior
+
+```{r}
+knitr::include_graphics("esferas.png")
+```
+
+
+---
+class: inverse
+
+# Abrangência
+
+- Estadual, Eleitoral: 27 tribunais (um por estado)
+- Federal: 5 regiões (conjuntos de estados)
+- Trabalho: 24 tribunais (geralmente conjuntos de estados, menos TRT2 e TRT15)
+- Militar: 3 tribunais (complicated)
+- Superiores: TST, STJ, STF, STM (Brasil)
+
+---
+class: inverse
+
+# Corte regional
+
+```{r}
+knitr::include_graphics("mapa.png")
+```
+
+
+---
+class: inverse
+
+# Entrâncias
+
+```{r}
+knitr::include_graphics("entrancia.png")
+```
+
+---
+class: inverse
+
+# Instâncias
+
+- Varas(comarca) -> Câmaras/Turmas(tribunal) -> Câmaras/Turmas(superior)
+
+```{r}
+knitr::include_graphics("magistrado.png")
+```
+
+---
+
+# Bases disponíveis
+
+- [Módulo de Produtividade Mensal (MPM)](http://bit.ly/mpm-cnj)
+- [Waze](https://github.com/abjur/tjsp_app)
+
+---
+class: inverse
+
+# Problemas
+
+- Integração MPM / Diário de Justiça Eletrônico / Tribunais
+- [Shapefile de comarcas](https://github.com/abjur/abjMaps)
+- [Listas de foros desorganizada](http://www.cnj.jus.br/programas-e-acoes/pj-numeracao-unica/documentos)
+
+---
+class: inverse
+
+# Dúvidas?
+
+---
+class: inverse
+
+# O que é jurimetria
+
+### Estatística aplicada ao direito
+
+--
+
+### Utilizamos dados do judiciário para estudar o que acontece no direito e como poderíamos melhorá-lo
+
+---
+class: inverse
+
+# Para quê serve jurimetria?
+
+--
+
+### auxiliar na formulação de políticas públicas,
+
+--
+
+### melhorar a administração dos tribunais,
+
+--
+
+### calcular o risco de carteiras de processos e
+
+--
+
+### otimizar estratégias processuais.
+
+---
+
+# Nas empresas
+
+```{r, echo=FALSE}
+knitr::include_graphics("jurimetria_empresas.png")
+```
+
+---
+class: inverse, middle, center
+
+# Principal problema da jurimetria
+
+--
+
+### Dados horríveis e volumosos
+
+--
+
+### Pré-sal sociológico
+
+---
+class: inverse, middle
+
+# Como resolver isso?
+
+--
+
+Ajude a ABJ nos nossos projetos open source `r emo::ji("smile")`
+
+--
+
+Vamos democratizar os dados do judiciário!
+
+---
+class: inverse, middle, center
+
+
+---
+class: inverse, middle, center
+
+# Objetivo final: The [lexverse](https://github.com/lexverse) !!!
+
+---
+class: inverse
+
+# Me stalkeia
+
+### https://github.com/jtrecenti
+
+### https://github.com/abjur
+
+### https://github.com/courtsbr
+
+### https://github.com/decryptr
+
+### https://github.com/curso-r
+
